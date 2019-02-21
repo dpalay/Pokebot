@@ -6,7 +6,7 @@ const GeoTz = require('geo-tz');
 const Ontime = require('ontime');
 const Express = require('express');
 const Discord = require('discord.js');
-const bigint = require('big-integer');
+const bigInt = require('big-integer');
 const moment = require('moment-timezone');
 const StaticMaps = require('staticmaps');
 const BodyParser = require('body-parser');
@@ -14,104 +14,128 @@ const InsideGeofence = require('point-in-polygon');
 const InsideGeojson = require('point-in-geopolygon');
 
 // EVENTS TO DISABLE TO SAVE MEMORY AND CPU
-var eventsToDisable = ['channelCreate','channelDelete','channelPinsUpdate','channelUpdate','clientUserGuildSettingsUpdate','clientUserSettingsUpdate',
-  'debug','disconnect','emojiCreate','emojiDelete','emojiUpdate','guildBanAdd','guildBanRemove','guildCreate','guildDelete','guildMemberAdd',
-  'guildMemberAvailable','guildMembersChunk','guildMemberSpeaking','guildMemberUpdate','guildUnavailable','guildUpdate','messageDelete',
-  'messageDeleteBulk','messageReactionAdd','messageReactionRemove','messageReactionRemoveAll','messageUpdate','presenceUpdate','ready',
-  'reconnecting','resume','roleCreate','roleDelete','roleUpdate','typingStart','typingStop','userNoteUpdate','userUpdate','voiceStateUpdate','warn'];
+var eventsToDisable = ['channelCreate', 'channelDelete', 'channelPinsUpdate', 'channelUpdate', 'clientUserGuildSettingsUpdate', 'clientUserSettingsUpdate',
+    'debug', 'disconnect', 'emojiCreate', 'emojiDelete', 'emojiUpdate', 'guildBanAdd', 'guildBanRemove', 'guildCreate', 'guildDelete', 'guildMemberAdd',
+    'guildMemberAvailable', 'guildMembersChunk', 'guildMemberSpeaking', 'guildMemberUpdate', 'guildUnavailable', 'guildUpdate', 'messageDelete',
+    'messageDeleteBulk', 'messageReactionAdd', 'messageReactionRemove', 'messageReactionRemoveAll', 'messageUpdate', 'presenceUpdate', 'ready',
+    'reconnecting', 'resume', 'roleCreate', 'roleDelete', 'roleUpdate', 'typingStart', 'typingStop', 'userNoteUpdate', 'userUpdate', 'voiceStateUpdate', 'warn'
+];
 
 // DEFINE BOTS AND DISABLE ALL EVENTS TO SAVE MEMORY AND CPU
-const MAIN = new Discord.Client({ disabledEvents: eventsToDisable }); const ALPHA=new Discord.Client({ disabledEvents: eventsToDisable });
-const BRAVO = new Discord.Client({ disabledEvents: eventsToDisable }); const CHARLIE=new Discord.Client({ disabledEvents: eventsToDisable });
-const DELTA = new Discord.Client({ disabledEvents: eventsToDisable }); const ECHO=new Discord.Client({ disabledEvents: eventsToDisable });
-const FOXTROT = new Discord.Client({ disabledEvents: eventsToDisable }); const GULF=new Discord.Client({ disabledEvents: eventsToDisable });
-const HOTEL = new Discord.Client({ disabledEvents: eventsToDisable }); const INDIA=new Discord.Client({ disabledEvents: eventsToDisable });
-const JULIET = new Discord.Client({ disabledEvents: eventsToDisable }); const KILO=new Discord.Client({ disabledEvents: eventsToDisable });
-const LIMA = new Discord.Client({ disabledEvents: eventsToDisable }); const MIKE=new Discord.Client({ disabledEvents: eventsToDisable });
-const NOVEMBER = new Discord.Client({ disabledEvents: eventsToDisable }); const OSCAR=new Discord.Client({ disabledEvents: eventsToDisable });
+const MAIN = new Discord.Client({ disabledEvents: eventsToDisable });
+const ALPHA = new Discord.Client({ disabledEvents: eventsToDisable });
+const BRAVO = new Discord.Client({ disabledEvents: eventsToDisable });
+const CHARLIE = new Discord.Client({ disabledEvents: eventsToDisable });
+const DELTA = new Discord.Client({ disabledEvents: eventsToDisable });
+const ECHO = new Discord.Client({ disabledEvents: eventsToDisable });
+const FOXTROT = new Discord.Client({ disabledEvents: eventsToDisable });
+const GULF = new Discord.Client({ disabledEvents: eventsToDisable });
+const HOTEL = new Discord.Client({ disabledEvents: eventsToDisable });
+const INDIA = new Discord.Client({ disabledEvents: eventsToDisable });
+const JULIET = new Discord.Client({ disabledEvents: eventsToDisable });
+const KILO = new Discord.Client({ disabledEvents: eventsToDisable });
+const LIMA = new Discord.Client({ disabledEvents: eventsToDisable });
+const MIKE = new Discord.Client({ disabledEvents: eventsToDisable });
+const NOVEMBER = new Discord.Client({ disabledEvents: eventsToDisable });
+const OSCAR = new Discord.Client({ disabledEvents: eventsToDisable });
 
 MAIN.config = ini.parse(fs.readFileSync('./config/config.ini', 'utf-8'));
 MAIN.Discord = require('./config/discords.json');
 
 // CACHE DATA FROM JSONS
-function load_files(){
-  MAIN.proto = require('./static/en.json');
-  MAIN.moves = require('./static/moves.json');
-  MAIN.db = require('./static/database.json');
-  MAIN.types = require('./static/types.json');
-  MAIN.pokemon = require('./static/pokemon.json');
-  MAIN.rewards = require('./static/rewards.json');
-  MAIN.Discord = require('./config/discords.json');
-  MAIN.geofences = require('./config/geojson.json');
-  MAIN.config = ini.parse(fs.readFileSync('./config/config.ini', 'utf-8'));
-  return;
+function load_files() {
+    MAIN.proto = require('./static/en.json');
+    MAIN.moves = require('./static/moves.json');
+    MAIN.db = require('./static/database.json');
+    MAIN.types = require('./static/types.json');
+    MAIN.pokemon = require('./static/pokemon.json');
+    MAIN.rewards = require('./static/rewards.json');
+    MAIN.Discord = require('./config/discords.json');
+    MAIN.geofences = require('./config/geojson.json');
+    MAIN.config = ini.parse(fs.readFileSync('./config/config.ini', 'utf-8'));
+    return;
 }
 
 // LOAD RAID FEED CHANNELS
 const raid_channels = ini.parse(fs.readFileSync('./config/channels_raids.ini', 'utf-8'));
-function load_raid_channels(){
-  MAIN.Raid_Channels = [];
-  for (var key in raid_channels){ MAIN.Raid_Channels.push([key, raid_channels[key]]); }
-  return console.log('[Pokébot] ['+MAIN.Bot_Time(null,'stamp')+'] [Start-Up] Loaded '+MAIN.Raid_Channels.length+' Raid Channels.');
+
+function load_raid_channels() {
+    MAIN.Raid_Channels = [];
+    for (var key in raid_channels) { MAIN.Raid_Channels.push([key, raid_channels[key]]); }
+    return console.log('[Pokébot] [' + MAIN.Bot_Time(null, 'stamp') + '] [Start-Up] Loaded ' + MAIN.Raid_Channels.length + ' Raid Channels.');
 }
 
 // LOAD POKEMON FEED CHANNELS
 const pokemon_channels = ini.parse(fs.readFileSync('./config/channels_pokemon.ini', 'utf-8'));
-function load_pokemon_channels(){
-  MAIN.Pokemon_Channels = [];
-  for (var key in pokemon_channels){ MAIN.Pokemon_Channels.push([key, pokemon_channels[key]]); }
-  return console.log('[Pokébot] ['+MAIN.Bot_Time(null,'stamp')+'] [Start-Up] Loaded '+MAIN.Pokemon_Channels.length+' Pokémon Channels');
+
+function load_pokemon_channels() {
+    MAIN.Pokemon_Channels = [];
+    for (var key in pokemon_channels) { MAIN.Pokemon_Channels.push([key, pokemon_channels[key]]); }
+    return console.log('[Pokébot] [' + MAIN.Bot_Time(null, 'stamp') + '] [Start-Up] Loaded ' + MAIN.Pokemon_Channels.length + ' Pokémon Channels');
 }
 
 // LOAD QUEST FEED CHANNELS
 const quest_channels = ini.parse(fs.readFileSync('./config/channels_quests.ini', 'utf-8'));
-function load_quest_channels(){
-  MAIN.Quest_Channels = [];
-  for (var key in quest_channels){ MAIN.Quest_Channels.push([key, quest_channels[key]]); }
-  return console.log('[Pokébot] ['+MAIN.Bot_Time(null,'stamp')+'] [Start-Up] Loaded '+MAIN.Quest_Channels.length+' Quest Channels.');
+
+function load_quest_channels() {
+    MAIN.Quest_Channels = [];
+    for (var key in quest_channels) { MAIN.Quest_Channels.push([key, quest_channels[key]]); }
+    return console.log('[Pokébot] [' + MAIN.Bot_Time(null, 'stamp') + '] [Start-Up] Loaded ' + MAIN.Quest_Channels.length + ' Quest Channels.');
 }
 
 // DEFINE AND LOAD MODULES
 var Raids, Emojis, Quests, Pokemon, Commands;
-function load_modules(){
-  Raids = require('./modules/raids.js');
-  Emojis = require('./modules/emojis.js');
-  Quests = require('./modules/quests.js');
-  Pokemon = require('./modules/pokemon.js');
-  Commands = require('./modules/commands.js');
-  return console.log('[Pokébot] ['+MAIN.Bot_Time(null,'stamp')+'] [Start-Up] Loaded 5 Modules.');
+
+function load_modules() {
+    Raids = require('./modules/raids.js');
+    Emojis = require('./modules/emojis.js');
+    Quests = require('./modules/quests.js');
+    Pokemon = require('./modules/pokemon.js');
+    Commands = require('./modules/commands.js');
+    return console.log('[Pokébot] [' + MAIN.Bot_Time(null, 'stamp') + '] [Start-Up] Loaded 5 Modules.');
 }
 
 // LOAD Commands
 MAIN.Commands = new Discord.Collection();
-function load_commands(){
-  fs.readdir('./modules/commands', (err,files) => {
-    let command_files = files.filter(f => f.split('.').pop()==='js'), command_count = 0;
-    command_files.forEach((f,i) => {
-      delete require.cache[require.resolve('./modules/commands/'+f)]; command_count++;
-      let command = require('./modules/commands/'+f); MAIN.Commands.set(f.slice(0,-3), command);
-    }); return console.log('[Pokébot] ['+MAIN.Bot_Time(null,'stamp')+'] [Start-Up] Loaded '+command_count+' Command Files.')
-  });
+
+function load_commands() {
+    fs.readdir('./modules/commands', (err, files) => {
+        let command_files = files.filter(f => f.split('.').pop() === 'js'),
+            command_count = 0;
+        command_files.forEach((f, i) => {
+            delete require.cache[require.resolve('./modules/commands/' + f)];
+            command_count++;
+            let command = require('./modules/commands/' + f);
+            MAIN.Commands.set(f.slice(0, -3), command);
+        });
+        return console.log('[Pokébot] [' + MAIN.Bot_Time(null, 'stamp') + '] [Start-Up] Loaded ' + command_count + ' Command Files.')
+    });
 }
 
 // LOAD FILTERS
 MAIN.Filters = new Discord.Collection();
-function load_filters(){
-  fs.readdir('./filters', (err,filters) => {
-    let filter_files = filters.filter(f => f.split('.').pop()==='json'), filter_count = 0;
-    filter_files.forEach((f,i) => {
-      delete require.cache[require.resolve('./filters/'+f)]; filter_count++;
-      let filter = require('./filters/'+f); filter.name = f; MAIN.Filters.set(f, filter);
-    }); return console.log('[Pokébot] ['+MAIN.Bot_Time(null,'stamp')+'] [Start-Up] Loaded '+filter_count+' Filters.');
-  });
+
+function load_filters() {
+    fs.readdir('./filters', (err, filters) => {
+        let filter_files = filters.filter(f => f.split('.').pop() === 'json'),
+            filter_count = 0;
+        filter_files.forEach((f, i) => {
+            delete require.cache[require.resolve('./filters/' + f)];
+            filter_count++;
+            let filter = require('./filters/' + f);
+            filter.name = f;
+            MAIN.Filters.set(f, filter);
+        });
+        return console.log('[Pokébot] [' + MAIN.Bot_Time(null, 'stamp') + '] [Start-Up] Loaded ' + filter_count + ' Filters.');
+    });
 }
 
 // DATABASE CONNECTION
 MAIN.database = MySQL.createConnection({
-  host: MAIN.config.DB.host,
-  user: MAIN.config.DB.username,
-  password: MAIN.config.DB.password,
-  port: MAIN.config.DB.port
+    host: MAIN.config.DB.host,
+    user: MAIN.config.DB.username,
+    password: MAIN.config.DB.password,
+    port: MAIN.config.DB.port
 }); //MAIN.database.connect();
 
 // GLOBAL VARIABLES
